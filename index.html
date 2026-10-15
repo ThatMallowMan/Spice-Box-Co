@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}</style>
+<title>Spice Box Co.</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400;1,6..96,500&family=Hanken+Grotesk:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: a spice box of nine compartments. Light ivory pages (Indian warmth) alternate with
+   espresso and jade cinematic bands (Thai refinement); everything closes under one lid at the end. */
+:root{
+  --bg:#F6EFE2; --bg2:#EFE5D2; --card:#FBF7EE; --fg:#2A1D16; --muted:#6B5A4C; --line:#D9CBB2;
+  --terracotta:#B4552F; --saffron:#D98E1F; --burnt:#C8641E; --olive:#6F7340; --gold:#A8843C; --jade:#1F5A52;
+  --night:#1E1510; --night2:#2B1E16; --night-fg:#F1E8D6; --night-muted:#B9A98F;
+  --jade-deep:#0E3733; --jade-mid:#17504A; --jade-fg:#E4EFE6; --jade-muted:#9DBBB2;
+  --font-display:"Bodoni Moda","Didot","Times New Roman",serif;
+  --font-body:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
+  --font-cond:"Barlow Condensed","Arial Narrow",sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px));
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1A1310; --bg2:#221913; --card:#2A1F18; --fg:#F1E8D6; --muted:#B9A98F; --line:#43342A;
+  --terracotta:#D9714A; --saffron:#E5A23A; --burnt:#E07A33; --olive:#98A05E; --gold:#CBA55A; --jade:#58A598; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1310; --bg2:#221913; --card:#2A1F18; --fg:#F1E8D6; --muted:#B9A98F; --line:#43342A;
+  --terracotta:#D9714A; --saffron:#E5A23A; --burnt:#E07A33; --olive:#98A05E; --gold:#CBA55A; --jade:#58A598; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin-inline:auto}
+section{position:relative;margin-inline:calc(50% - 50vw);padding-inline:max(16px,calc(50vw - 590px))}
+h1,h2,h3,h4,p{margin:0}
+h2,h3{text-wrap:balance}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--saffron);outline-offset:3px;border-radius:2px}
+
+.eyebrow{font-family:var(--font-cond);font-weight:500;letter-spacing:.24em;text-transform:uppercase;font-size:.95rem;color:var(--terracotta)}
+.display{font-family:var(--font-display);font-weight:500;line-height:1.02;letter-spacing:-.01em}
+.h2{font-family:var(--font-display);font-weight:500;font-size:clamp(2.2rem,6vw,4.4rem);line-height:1.04;letter-spacing:-.015em}
+.lede{font-size:clamp(1.05rem,2vw,1.25rem);color:var(--muted);max-width:60ch}
+.pad{padding-block:clamp(72px,11vw,150px)}
+.dark{background:var(--night);color:var(--night-fg)}
+.dark .lede,.dark .muted{color:var(--night-muted)}
+.dark .eyebrow{color:var(--saffron)}
+.jade{background:var(--jade-deep);color:var(--jade-fg)}
+.jade .lede,.jade .muted{color:var(--jade-muted)}
+.jade .eyebrow{color:#C9B47A}
+.rv{transform:translateY(22px);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{transform:none}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+/* nav */
+header{position:fixed;inset:0 0 auto 0;z-index:50;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));padding-top:max(14px,env(safe-area-inset-top,0px));
+  transition:background .4s,backdrop-filter .4s,border-color .4s;border-bottom:1px solid transparent;color:var(--night-fg)}
+header.solid{background:color-mix(in srgb,var(--night) 88%,transparent);backdrop-filter:blur(14px);border-color:#ffffff1a}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1180px;margin-inline:auto}
+.logo{font-family:var(--font-cond);font-weight:600;letter-spacing:.28em;text-decoration:none;font-size:1.05rem;white-space:nowrap}
+.links{display:none;gap:clamp(14px,2vw,28px);list-style:none;margin:0;padding:0}
+.links a{text-decoration:none;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;opacity:.82;transition:opacity .2s;padding:6px 0;border-bottom:1px solid transparent}
+.links a:hover,.links a.on{opacity:1;border-color:var(--saffron)}
+.cta-mini{font-family:var(--font-cond);letter-spacing:.2em;text-transform:uppercase;font-size:.85rem;text-decoration:none;border:1px solid #F1E8D6aa;padding:8px 16px;border-radius:999px;transition:background .3s,color .3s;white-space:nowrap}
+.cta-mini:hover{background:var(--night-fg);color:var(--night)}
+.burger{background:none;border:0;padding:8px;width:40px;height:40px;position:relative}
+.burger i{position:absolute;left:9px;right:9px;height:1.5px;background:currentColor;transition:transform .3s,top .3s}
+.burger i:nth-child(1){top:15px}.burger i:nth-child(2){top:23px}
+.burger[aria-expanded=true] i:nth-child(1){top:19px;transform:rotate(45deg)}
+.burger[aria-expanded=true] i:nth-child(2){top:19px;transform:rotate(-45deg)}
+.right{display:flex;align-items:center;gap:6px}
+.sheet{position:fixed;inset:0;background:var(--night);z-index:40;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:80px max(24px,env(safe-area-inset-left,0px)) 40px;
+  clip-path:inset(0 0 100% 0);transition:clip-path .6s cubic-bezier(.7,0,.2,1);visibility:hidden}
+.sheet.open{clip-path:inset(0);visibility:visible}
+.sheet a{font-family:var(--font-display);font-size:clamp(1.9rem,8vw,2.8rem);text-decoration:none;color:var(--night-fg);padding:6px 0;border-bottom:1px solid #ffffff14}
+@media(min-width:1000px){.links{display:flex}.burger{display:none}.sheet{display:none}}
+
+/* hero */
+#home{background:radial-gradient(120% 90% at 70% 105%,#7A3516 0%,#3A2013 38%,var(--night) 75%);color:var(--night-fg);padding-top:clamp(130px,22vw,230px);padding-bottom:0;overflow:hidden}
+#home .art{position:absolute;inset:0;pointer-events:none}
+#home .art svg{position:absolute;width:100%;height:100%}
+.hero-in{position:relative;z-index:2;padding-bottom:clamp(160px,26vw,320px)}
+.hero-kicker{display:flex;align-items:center;gap:14px;animation:up 1.2s .2s both cubic-bezier(.2,.7,.2,1)}
+.hero-kicker::before{content:"";width:44px;height:1px;background:var(--saffron)}
+.hero-title{font-family:var(--font-display);font-weight:500;font-size:clamp(3.4rem,15.5vw,12.5rem);line-height:.9;letter-spacing:-.03em;margin-top:22px;animation:up 1.4s .35s both cubic-bezier(.2,.7,.2,1)}
+.hero-title span{color:var(--saffron);font-style:italic;font-weight:400}
+.hero-tag{font-family:var(--font-display);font-style:italic;font-size:clamp(1.4rem,3.6vw,2.4rem);margin-top:clamp(18px,3vw,34px);animation:up 1.4s .55s both cubic-bezier(.2,.7,.2,1)}
+.hero-copy{max-width:46ch;color:var(--night-muted);margin-top:16px;animation:up 1.4s .7s both cubic-bezier(.2,.7,.2,1)}
+.btns{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;animation:up 1.4s .85s both cubic-bezier(.2,.7,.2,1)}
+.btn{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;padding:16px 28px;border-radius:999px;border:1px solid transparent;transition:transform .3s,background .3s,color .3s,border-color .3s;font-weight:500;background:none}
+.btn.fill{background:var(--saffron);color:#25160B}
+.btn.fill:hover{background:#F0AE45;transform:translateY(-2px)}
+.btn.ghost{border-color:#F1E8D6aa;color:var(--night-fg)}
+.btn.ghost:hover{background:var(--night-fg);color:var(--night)}
+.scrollcue{position:absolute;z-index:2;left:50%;bottom:22px;width:1px;height:56px;background:linear-gradient(var(--saffron),transparent);animation:cue 2.4s infinite}
+@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* concept */
+.concept-grid{display:grid;gap:clamp(36px,6vw,80px);grid-template-columns:1fr;align-items:center;margin-top:clamp(36px,5vw,64px)}
+@media(min-width:900px){.concept-grid{grid-template-columns:.9fr 1.1fr}}
+.concept-grid>*{min-width:0}
+.statement{font-family:var(--font-display);font-style:italic;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1.2;margin-top:30px;padding-left:20px;border-left:2px solid var(--saffron)}
+.box{position:relative;background:linear-gradient(160deg,#6B3F22,#4A2A16);padding:clamp(10px,2vw,18px);border-radius:10px;box-shadow:0 30px 60px -28px #2A1D16aa,inset 0 0 0 1px #ffffff1a;max-width:560px;margin-inline:auto;width:100%}
+.cells{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,1.4vw,12px);position:relative}
+.cell{aspect-ratio:1;border:0;border-radius:6px;position:relative;overflow:hidden;background:#2A1A10;box-shadow:inset 0 6px 14px #0009,inset 0 -1px 0 #ffffff12;display:flex;align-items:flex-end;justify-content:center;padding:0 4px 8px;color:#F6EFE2;transition:transform .4s}
+.cell::before{content:"";position:absolute;left:12%;right:12%;bottom:26%;height:46%;border-radius:50% 50% 30% 30%/80% 80% 20% 20%;background:radial-gradient(ellipse at 50% 20%,color-mix(in srgb,var(--c) 70%,#fff) 0%,var(--c) 55%,color-mix(in srgb,var(--c) 60%,#000) 100%);transition:transform .5s cubic-bezier(.2,.7,.2,1),filter .5s;box-shadow:0 6px 10px #0008}
+.cell span{position:relative;font-family:var(--font-cond);letter-spacing:.16em;text-transform:uppercase;font-size:clamp(.62rem,1.6vw,.82rem);opacity:.85}
+.cell:hover::before,.cell.act::before,.cell:focus-visible::before{transform:translateY(-8px) scale(1.08);filter:brightness(1.12)}
+.cell.act{box-shadow:inset 0 0 0 2px var(--saffron),inset 0 6px 14px #0009}
+.lid{position:absolute;inset:0;background:linear-gradient(150deg,#8A5530,#5C361C);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px;
+  transform:translateY(-101%);transition:transform 1.1s cubic-bezier(.7,0,.2,1);z-index:3;box-shadow:0 20px 40px #0008;pointer-events:none;color:#F6EFE2}
+.box.closed .lid{transform:none;pointer-events:auto}
+.lid b{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:clamp(1.3rem,4vw,2.2rem);line-height:1.1}
+.lid small{font-family:var(--font-cond);letter-spacing:.3em;text-transform:uppercase;font-size:.8rem;color:#E8C77D}
+.lid svg{width:54px;height:54px;color:#E8C77D}
+.info{margin-top:14px;background:#00000026;border-radius:6px;padding:14px 16px;color:#F6EFE2;min-height:92px}
+.info h3{font-family:var(--font-display);font-size:1.3rem;font-weight:500}
+.info p{font-size:.93rem;opacity:.85;margin-top:2px;line-height:1.5}
+.info em{font-family:var(--font-cond);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;color:#E8C77D;font-style:normal}
+.lidbtn{margin:18px auto 0;display:flex}
+.lidbtn{background:none;border:1px solid var(--fg);color:var(--fg);padding:10px 22px;border-radius:999px;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;transition:background .3s,color .3s}
+.lidbtn:hover{background:var(--fg);color:var(--bg)}
+
+/* wellness */
+#wellness{background:var(--bg2)}
+.head2{max-width:780px}
+.head2 .sub{font-family:var(--font-display);font-style:italic;font-size:clamp(1.2rem,2.6vw,1.7rem);color:var(--terracotta);margin-top:14px}
+.three{display:grid;gap:18px;grid-template-columns:1fr;margin-top:clamp(36px,5vw,64px)}
+@media(min-width:800px){.three{grid-template-columns:repeat(3,1fr)}}
+.pcard{background:var(--card);border:1px solid var(--line);padding:clamp(26px,3vw,38px);position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s;min-width:0;display:flex;flex-direction:column;gap:14px;border-radius:2px}
+.pcard:hover{transform:translateY(-6px);box-shadow:0 26px 40px -26px #2A1D1688}
+.pcard .ic{width:46px;height:46px;color:var(--jade)}
+.pcard h3{font-family:var(--font-cond);letter-spacing:.2em;text-transform:uppercase;font-weight:600;font-size:1.05rem;color:var(--terracotta)}
+.pcard q{quotes:none;font-family:var(--font-display);font-size:clamp(1.5rem,2.6vw,2rem);line-height:1.15}
+.pcard p{color:var(--muted);font-size:.97rem}
+.pcard::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--saffron);transition:width .6s}
+.pcard:hover::after{width:100%}
+.beyond{display:grid;gap:clamp(24px,5vw,64px);grid-template-columns:1fr;margin-top:clamp(28px,4vw,48px)}
+@media(min-width:900px){.beyond{grid-template-columns:1fr 1fr}}
+
+/* pillars */
+.pillars{display:grid;gap:clamp(24px,4vw,56px);grid-template-columns:1fr;margin-top:clamp(36px,5vw,64px)}
+@media(min-width:900px){.pillars{grid-template-columns:.85fr 1.15fr}}
+.pillars>*{min-width:0}
+.plist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ptab{background:none;border:0;border-bottom:1px solid var(--line);text-align:left;padding:20px 4px;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:center;transition:padding .4s,color .3s;color:var(--muted)}
+.ptab svg{width:34px;height:34px;grid-row:1/3}
+.ptab b{font-family:var(--font-cond);letter-spacing:.18em;text-transform:uppercase;font-size:1.02rem;font-weight:600}
+.ptab span{font-size:.9rem;grid-column:2}
+.ptab[aria-selected=true]{color:var(--fg);padding-left:16px;box-shadow:inset 3px 0 0 var(--saffron)}
+.ptab[aria-selected=true] svg{color:var(--terracotta)}
+.ppanel{position:relative;border-radius:2px;overflow:hidden;min-height:340px;aspect-ratio:4/3.4;background:var(--jade-deep)}
+.ppanel svg.scene{position:absolute;inset:0;width:100%;height:100%}
+.ppanel .cap{position:absolute;left:0;right:0;bottom:0;padding:clamp(20px,3vw,34px);background:linear-gradient(transparent,#0E1A18f2 70%);color:var(--jade-fg)}
+.ppanel .cap h3{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.3rem);font-weight:500}
+.ppanel .cap p{color:var(--jade-muted);font-size:.97rem;max-width:46ch;margin-top:6px}
+.ppanel .scene{opacity:0;transition:opacity .7s}
+.ppanel .scene.on{opacity:1}
+
+/* cuisine */
+.chefs{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:26px;font-family:var(--font-display);font-size:clamp(1.5rem,3.4vw,2.4rem)}
+.chefs i{color:var(--saffron);font-weight:400}
+.cuisine-grid{display:grid;gap:clamp(30px,5vw,70px);grid-template-columns:1fr;margin-top:clamp(30px,4vw,50px);align-items:center}
+@media(min-width:900px){.cuisine-grid{grid-template-columns:1.1fr .9fr}}
+.cuisine-grid>*{min-width:0}
+.kitchen{aspect-ratio:1/1;max-width:520px;width:100%;margin-inline:auto;position:relative}
+.ops{display:grid;gap:0;margin-top:clamp(40px,6vw,80px);grid-template-columns:1fr;border-top:1px solid #ffffff24}
+@media(min-width:800px){.ops{grid-template-columns:repeat(3,1fr)}.ops .op+.op{border-left:1px solid #ffffff24}}
+.op{padding:30px clamp(0px,2vw,28px) 30px 0;display:flex;flex-direction:column;gap:8px}
+@media(min-width:800px){.op{padding-left:28px}.op:first-child{padding-left:0}}
+.op h3{font-family:var(--font-cond);letter-spacing:.22em;text-transform:uppercase;font-size:1rem;font-weight:600;color:var(--saffron)}
+.op q{quotes:none;font-family:var(--font-display);font-size:clamp(1.4rem,2.4vw,1.8rem);line-height:1.2}
+.flame{transform-origin:50% 100%;animation:flick 2.6s ease-in-out infinite}
+.flame.b{animation-delay:-.9s}.flame.c{animation-delay:-1.7s}
+@keyframes flick{0%,100%{transform:scale(1,1)}35%{transform:scale(.94,1.06)}70%{transform:scale(1.04,.96)}}
+
+/* cultural synergy */
+#cultural{background:linear-gradient(180deg,var(--bg) 0%,#E7D3B2 55%,#9DB3A0 88%,var(--jade-deep) 100%);padding-bottom:clamp(140px,18vw,240px);color:#2A1D16}
+#cultural .lede,#cultural .muted{color:#5A4637}
+#cultural .eyebrow{color:#9B3F1F}
+.regions{display:grid;gap:14px;grid-template-columns:1fr 1fr;margin-top:clamp(36px,5vw,60px);position:relative;z-index:2}
+@media(min-width:900px){.regions{grid-template-columns:repeat(4,1fr);gap:20px}}
+.reg{background:#FBF7EEdd;border:1px solid #D2BE98;padding:clamp(18px,2.4vw,28px);display:flex;flex-direction:column;gap:10px;min-width:0;transition:transform .5s cubic-bezier(.2,.7,.2,1),background .4s;border-top:4px solid var(--c);border-radius:2px}
+.reg:hover{transform:translateY(-8px);background:#FBF7EE}
+.reg h3{font-family:var(--font-cond);letter-spacing:.24em;font-size:1.15rem;font-weight:600}
+.reg q{quotes:none;font-family:var(--font-display);font-style:italic;font-size:clamp(1.05rem,1.8vw,1.35rem);line-height:1.25}
+.reg .dot{width:34px;height:34px;border-radius:50% 50% 30% 30%/80% 80% 20% 20%;background:radial-gradient(ellipse at 50% 20%,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 60%,color-mix(in srgb,var(--c) 60%,#000))}
+.funnel{display:block;width:100%;height:auto;margin-top:-6px;position:relative;z-index:1;max-height:200px}
+.merge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-top:6px;position:relative;z-index:2}
+.merge p{font-family:var(--font-display);font-style:italic;font-size:clamp(1.3rem,3vw,2rem);max-width:30ch;color:#1F2E2A}
+
+/* siam */
+#siam{background:linear-gradient(180deg,var(--jade-deep) 0%,#0B2C29 100%);overflow:hidden;margin-top:-1px}
+.siam-grid{display:grid;gap:clamp(30px,5vw,70px);grid-template-columns:1fr;align-items:center;position:relative;z-index:2}
+@media(min-width:900px){.siam-grid{grid-template-columns:1.05fr .95fr}}
+.siam-grid>*{min-width:0}
+.siam-title{font-family:var(--font-display);font-weight:400;font-size:clamp(2.6rem,9vw,7rem);line-height:.95;letter-spacing:-.02em}
+.siam-title i{display:block;font-size:.42em;letter-spacing:.02em;color:#C9B47A;margin-bottom:.4em;font-weight:400}
+.thai-line{display:flex;align-items:center;gap:14px;margin-block:22px;color:#C9B47A}
+.thai-line::before,.thai-line::after{content:"";height:1px;background:currentColor;opacity:.5;flex:0 0 40px}
+.thai-line svg{width:20px;height:20px}
+.sq{display:grid;gap:0;grid-template-columns:1fr;margin-top:34px;border-top:1px solid #ffffff22}
+.sq div{padding:16px 0;border-bottom:1px solid #ffffff22;display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:baseline}
+.sq b{font-family:var(--font-cond);letter-spacing:.2em;text-transform:uppercase;font-weight:500;color:#C9B47A;font-size:.95rem}
+.sq span{color:var(--jade-muted);font-size:.97rem}
+.siam-art{position:relative;aspect-ratio:4/5;max-width:520px;width:100%;margin-inline:auto}
+.siam-art svg{position:absolute;inset:0;width:100%;height:100%}
+.siam-bg{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.mist{animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translateX(-16px)}to{transform:translateX(16px)}}
+
+/* experience */
+.exp-grid{display:grid;gap:clamp(28px,5vw,70px);grid-template-columns:1fr;margin-top:clamp(34px,5vw,60px);align-items:center}
+@media(min-width:900px){.exp-grid{grid-template-columns:1.05fr .95fr}}
+.exp-grid>*{min-width:0}
+.sect{background:var(--card);border:1px solid var(--line);padding:clamp(12px,2.4vw,24px);border-radius:2px}
+.sect svg{width:100%;height:auto;display:block}
+.sect figcaption{font-family:var(--font-cond);letter-spacing:.2em;text-transform:uppercase;font-size:.78rem;color:var(--muted);margin-top:8px}
+.sect{margin:0}
+.elist{display:grid;gap:0;grid-template-columns:1fr 1fr}
+.elist div{padding:22px 18px 22px 0;border-bottom:1px solid var(--line);min-width:0}
+.elist div:nth-child(odd){border-right:1px solid var(--line);padding-right:18px}
+.elist div:nth-child(even){padding-left:18px}
+@media(max-width:560px){.elist{grid-template-columns:1fr}.elist div,.elist div:nth-child(odd),.elist div:nth-child(even){border-right:0;padding-inline:0}}
+.elist h3{font-family:var(--font-cond);letter-spacing:.18em;text-transform:uppercase;font-size:.95rem;font-weight:600;color:var(--terracotta)}
+.elist p{font-family:var(--font-display);font-size:1.25rem;line-height:1.25;margin-top:6px}
+
+/* sensory */
+#sensory{background:#E3E8DC;color:#23302B}
+#sensory .eyebrow{color:#2E6A60}
+#sensory .lede{color:#4B5C55}
+.sens{display:grid;gap:clamp(28px,4vw,56px);grid-template-columns:1fr;margin-top:clamp(50px,7vw,96px)}
+@media(min-width:800px){.sens{grid-template-columns:repeat(3,1fr)}}
+.sc{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sc .vis{aspect-ratio:1/.8;background:#F2F5EE;border-radius:2px;overflow:hidden;position:relative}
+.sc .vis svg{width:100%;height:100%;display:block}
+.sc .k{font-family:var(--font-cond);letter-spacing:.3em;font-size:1rem;color:#2E6A60;font-weight:600}
+.sc h3{font-family:var(--font-display);font-weight:500;font-size:clamp(1.6rem,2.6vw,2.1rem);line-height:1.1}
+.sc p{color:#4B5C55;font-size:.97rem}
+.breath{animation:breathe 7s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+.wave{animation:wv 6s ease-in-out infinite alternate}
+@keyframes wv{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
+
+/* paced service */
+.journey{position:relative;margin-top:clamp(40px,6vw,70px)}
+.team-line{margin-top:22px;font-family:var(--font-display);font-size:clamp(1.3rem,3vw,2rem);color:var(--night-fg)}
+.team-line i{color:var(--saffron);font-style:normal;padding-inline:.35em}
+.track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:18px;margin-inline:calc(var(--gutter)*-1);padding-inline:var(--gutter);scrollbar-width:thin}
+.track::-webkit-scrollbar{height:4px}.track::-webkit-scrollbar-thumb{background:#ffffff40}
+.step{flex:0 0 min(82vw,360px);scroll-snap-align:start;border:1px solid #ffffff22;padding:clamp(24px,3vw,34px);background:#ffffff08;display:flex;flex-direction:column;gap:12px;min-height:290px;position:relative;border-radius:2px}
+.step .n{font-family:var(--font-display);font-size:4.2rem;line-height:1;color:var(--saffron);font-style:italic}
+.step h3{font-family:var(--font-cond);letter-spacing:.2em;text-transform:uppercase;font-size:1.05rem;font-weight:600}
+.step q{quotes:none;font-family:var(--font-display);font-size:1.5rem;line-height:1.2;color:var(--night-fg)}
+.step svg{width:64px;height:30px;color:var(--saffron);margin-top:auto}
+@media(min-width:980px){.track{overflow:visible;padding-inline:0;margin-inline:0;display:grid;grid-template-columns:repeat(3,1fr)}.step{flex:none}}
+.pace{height:2px;background:#ffffff1c;position:relative;margin-top:18px;overflow:hidden}
+.pace i{position:absolute;inset:0;background:linear-gradient(90deg,var(--saffron),var(--terracotta));transform:scaleX(0);transform-origin:left;transition:transform 2.6s cubic-bezier(.5,0,.2,1)}
+.journey.in .pace i{transform:none}
+.hint{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--night-muted);margin-top:10px}
+@media(min-width:980px){.hint{display:none}}
+
+/* team */
+.teams{display:grid;gap:16px;grid-template-columns:1fr;margin-top:clamp(34px,5vw,60px)}
+@media(min-width:640px){.teams{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.teams{grid-template-columns:repeat(6,1fr)}.tm:nth-child(1),.tm:nth-child(2),.tm:nth-child(3){grid-column:span 2}.tm:nth-child(4){grid-column:2 / span 2}.tm:nth-child(5){grid-column:span 2}}
+.tm{background:var(--card);border:1px solid var(--line);padding:28px;display:flex;flex-direction:column;gap:18px;min-width:0;transition:transform .5s cubic-bezier(.2,.7,.2,1),border-color .4s;border-radius:2px}
+.tm:hover{transform:translateY(-6px);border-color:var(--terracotta)}
+.tm .role{font-family:var(--font-cond);letter-spacing:.22em;text-transform:uppercase;color:var(--terracotta);font-size:.92rem;font-weight:600}
+.tm ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.tm li{display:flex;align-items:center;gap:14px;font-family:var(--font-display);font-size:1.4rem;line-height:1.15}
+.av{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-cond);letter-spacing:.06em;font-size:.95rem;font-weight:600;color:#F6EFE2;background:var(--c)}
+
+/* finale */
+#enter{background:radial-gradient(100% 80% at 50% 120%,#6E3115 0%,var(--night) 60%);color:var(--night-fg);text-align:center;overflow:hidden}
+.final{font-family:var(--font-display);font-weight:500;font-size:clamp(2.6rem,11vw,9.4rem);line-height:.92;letter-spacing:-.03em;text-transform:uppercase;text-wrap:balance}
+.final span{display:block}
+.final .t{font-style:italic;font-weight:400;color:var(--saffron);text-transform:none;letter-spacing:-.02em}
+.brandrow{margin-top:clamp(40px,6vw,80px);display:flex;flex-direction:column;align-items:center;gap:14px}
+.brandrow b{font-family:var(--font-cond);letter-spacing:.5em;font-weight:500;font-size:clamp(1.2rem,3vw,1.8rem);padding-left:.5em}
+.brandrow em{font-family:var(--font-display);font-size:clamp(1.1rem,2.2vw,1.5rem);color:var(--night-muted)}
+.enter-btn{margin-top:40px;font-size:.9rem;padding:20px 42px;position:relative}
+.enter-btn svg{width:18px;height:18px;transition:transform .5s}
+.enter-btn:hover svg{transform:translateX(5px)}
+.note{margin:22px auto 0;max-width:46ch;color:var(--night-muted);border:1px solid #ffffff26;padding:16px 20px;font-size:.95rem;border-radius:2px}
+footer{background:var(--night);color:var(--night-muted);margin-inline:calc(50% - 50vw);padding:26px max(16px,calc(50vw - 590px));font-size:.82rem;letter-spacing:.08em;display:flex;flex-wrap:wrap;gap:10px 30px;justify-content:space-between;border-top:1px solid #ffffff14}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .rv{transform:none}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Thai pagoda silhouette, three curved tiers -->
+    <symbol id="pagoda" viewBox="0 0 200 260">
+      <g fill="currentColor">
+        <rect x="99" y="0" width="2" height="34"/>
+        <path d="M40 74Q86 70 100 34Q114 70 160 74Q100 84 40 74Z"/>
+        <rect x="76" y="76" width="48" height="34"/>
+        <path d="M20 128Q80 124 100 88Q120 124 180 128Q100 140 20 128Z"/>
+        <rect x="64" y="130" width="72" height="36"/>
+        <path d="M2 190Q74 186 100 146Q126 186 198 190Q100 204 2 190Z"/>
+        <rect x="52" y="192" width="96" height="40"/>
+        <rect x="30" y="232" width="140" height="12"/>
+        <rect x="14" y="244" width="172" height="12"/>
+      </g>
+    </symbol>
+    <symbol id="leaf" viewBox="0 0 100 200">
+      <path fill="currentColor" d="M50 198C10 150 2 80 50 2C98 80 90 150 50 198Z"/>
+      <path d="M50 190V20M50 70L28 52M50 100L24 78M50 130L26 108M50 70L72 52M50 100L76 78M50 130L74 108" stroke="#0000004d" stroke-width="2" fill="none"/>
+    </symbol>
+    <symbol id="lotus" viewBox="0 0 60 40">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M30 36C22 28 22 14 30 4C38 14 38 28 30 36Z"/>
+        <path d="M30 36C18 34 10 26 8 16C18 16 26 22 30 36Z"/>
+        <path d="M30 36C42 34 50 26 52 16C42 16 34 22 30 36Z"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header id="top">
+  <div class="nav">
+    <a class="logo" href="#home" aria-label="Spice Box Co. home">SPICE BOX CO.</a>
+    <ul class="links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#concept">The Concept</a></li>
+      <li><a href="#wellness">Wellness</a></li>
+      <li><a href="#cuisine">Cuisine</a></li>
+      <li><a href="#siam">Siam Spice House</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#team">Our Team</a></li>
+    </ul>
+    <div class="right">
+      <a class="cta-mini" href="#enter">Reserve / Explore</a>
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+<nav class="sheet" id="sheet" aria-label="Menu">
+  <a href="#home">Home</a><a href="#concept">The Concept</a><a href="#wellness">Wellness</a><a href="#cuisine">Cuisine</a>
+  <a href="#siam">Siam Spice House</a><a href="#experience">Experience</a><a href="#team">Our Team</a>
+</nav>
+
+<main>
+<!-- HERO -->
+<section id="home">
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <radialGradient id="sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#F2A93B" stop-opacity=".95"/><stop offset=".45" stop-color="#C8641E" stop-opacity=".45"/><stop offset="1" stop-color="#C8641E" stop-opacity="0"/></radialGradient>
+        <linearGradient id="hz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17504A"/><stop offset="1" stop-color="#0B2C29"/></linearGradient>
+      </defs>
+      <g data-speed="0.08"><circle cx="900" cy="470" r="330" fill="url(#sun)"/></g>
+      <g data-speed="0.14" style="color:#2A5E55;opacity:.7"><use href="#pagoda" x="860" y="150" width="300" height="390"/></g>
+      <g data-speed="0.2"><path d="M0 640C180 560 340 600 520 560C720 520 900 590 1200 540V760H0Z" fill="#12403A"/></g>
+      <g data-speed="0.3" style="color:#0B2C29"><use href="#pagoda" x="1000" y="330" width="170" height="220" style="color:#0E3733"/></g>
+      <g data-speed="0.36" style="color:#081F1D">
+        <use href="#leaf" x="-30" y="470" width="130" height="260" transform="rotate(-24 30 600)"/>
+        <use href="#leaf" x="40" y="520" width="110" height="230" transform="rotate(8 90 640)"/>
+        <use href="#leaf" x="1080" y="500" width="140" height="260" transform="rotate(26 1150 620)"/>
+        <use href="#leaf" x="1010" y="540" width="100" height="220" transform="rotate(-10 1060 650)"/>
+      </g>
+      <path d="M0 700C260 660 520 720 780 690C960 670 1080 700 1200 690V760H0Z" fill="#1E1510"/>
+    </svg>
+  </div>
+  <div class="wrap hero-in">
+    <div class="hero-kicker eyebrow">Indo-Thai Hospitality</div>
+    <h1 class="hero-title">SPICE<br>BOX <span>Co.</span></h1>
+    <p class="hero-tag">Nine Compartments, One Closed Lid</p>
+    <p class="hero-copy">Distinct culinary traditions, brought together through one complete hospitality experience.</p>
+    <div class="btns">
+      <a class="btn fill" href="#concept">Explore the Experience</a>
+      <a class="btn ghost" href="#cuisine">Discover the Menu</a>
+    </div>
+  </div>
+  <div class="scrollcue" aria-hidden="true"></div>
+</section>
+
+<!-- CONCEPT -->
+<section id="concept" class="pad">
+  <div class="wrap">
+    <div class="eyebrow rv">The Idea</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">THE SPICE BOX</h2>
+    <div class="concept-grid">
+      <div>
+        <p class="lede rv">In an Indian kitchen, the masala box holds the spices a cook trusts most, each in its own compartment, each kept apart so that it stays true. Close the lid and it is one object, ready for any dish.</p>
+        <p class="lede rv" style="margin-top:18px">Spice Box Co. is built the same way. Each compartment is a distinct culinary identity, an ingredient profile or a part of the guest experience. Every one is curated on its own terms. Together they make a single complete evening.</p>
+        <p class="statement rv">Separately Curated. Together Complete.</p>
+      </div>
+      <div class="rv d1">
+        <div class="box" id="box">
+          <div class="cells" id="cells"></div>
+          <div class="lid" id="lid" aria-hidden="true">
+            <svg viewBox="0 0 60 40"><use href="#lotus"/></svg>
+            <b>Separately Curated.<br>Together Complete.</b>
+            <small>Nine Compartments, One Closed Lid</small>
+          </div>
+          <div class="info" id="info" aria-live="polite"></div>
+        </div>
+        <button class="lidbtn" id="lidbtn" type="button">Close the lid</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WELLNESS -->
+<section id="wellness" class="pad">
+  <div class="wrap">
+    <div class="head2">
+      <div class="eyebrow rv">Wellness Hospitality</div>
+      <h2 class="h2 rv d1" style="margin-top:12px">BEYOND DIET FOOD</h2>
+      <p class="sub rv d2">Redefining Dining Wellness</p>
+    </div>
+    <div class="beyond">
+      <p class="lede rv">Wellness at the table is not a calorie count. It is the feeling of arriving somewhere you can stop thinking. We treat it as a design problem: build trust in the kitchen, remove friction from the room, and engineer an environment where a guest can genuinely relax.</p>
+      <p class="lede rv d1">Three principles guide every decision, from how a menu reads to how a chair sits.</p>
+    </div>
+    <div class="three">
+      <article class="pcard rv">
+        <svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 42S8 32 8 19a8 8 0 0116-3 8 8 0 0116 3c0 13-16 23-16 23z"/><path d="M17 24h6l2-5 3 9 2-4h4"/></svg>
+        <h3>Psychological Comfort</h3>
+        <q>Absolute trust in culinary mastery.</q>
+        <p>When guests trust the kitchen completely, they stop second-guessing the plate and start enjoying it.</p>
+      </article>
+      <article class="pcard rv d1">
+        <svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36"/><path d="M30 14l12 10-12 10"/><circle cx="10" cy="24" r="3"/></svg>
+        <h3>Frictionless Experience</h3>
+        <q>Removing all decision fatigue.</q>
+        <p>Curated sequences, clear guidance and anticipatory service leave guests with one task: to enjoy.</p>
+      </article>
+      <article class="pcard rv d2">
+        <svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 36c8-2 8-6 16-6s8 4 16 6"/><path d="M8 28c8-2 8-6 16-6s8 4 16 6"/><path d="M24 20V8"/><path d="M24 8c-5 2-7 6-7 10 4 0 7-3 7-10zM24 8c5 2 7 6 7 10-4 0-7-3-7-10z"/></svg>
+        <h3>Environmental Rest</h3>
+        <q>Engineering physical tranquility.</q>
+        <p>Air, sound, light and seating are specified with the same care as the recipes.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section id="pillars" class="pad" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow rv">Foundations</div>
+    <h2 class="h2 rv d1" style="margin-top:12px;max-width:16ch">THE FOUR PILLARS OF WELLNESS</h2>
+    <div class="pillars">
+      <div class="plist" role="tablist" aria-label="The four pillars" id="plist">
+        <button class="ptab" role="tab" aria-selected="true" data-i="0" id="t0"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c8 8 12 14 12 22a12 12 0 01-24 0c0-8 4-14 12-22z"/><path d="M24 20v18M24 28l-6-4M24 33l6-4"/></svg><b>Mastery-Driven Purity</b><span>Unadulterated ingredient execution.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" data-i="1" id="t1"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v20a6 6 0 006 6h14"/><path d="M12 22h20"/><path d="M32 34v8M18 34v8"/><path d="M36 14c-4 0-6 3-6 6 4 0 6-3 6-6z"/></svg><b>Ergonomic Architecture</b><span>Biophilic physical comfort.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" data-i="2" id="t2"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="6"/><path d="M8 24c4-8 10-12 16-12s12 4 16 12c-4 8-10 12-16 12S12 32 8 24z"/></svg><b>Sensory Decompression</b><span>Pristine environmental control.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" data-i="3" id="t3"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="M24 14v10l7 4"/></svg><b>Paced Dining</b><span>Insulated spatial privacy.</span></button>
+      </div>
+      <div class="ppanel" id="ppanel" role="tabpanel" aria-live="polite">
+        <!-- scene 0: purity -->
+        <svg class="scene on" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="340" fill="#16342F"/>
+          <circle cx="200" cy="160" r="120" fill="#C8641E" opacity=".18"/>
+          <ellipse cx="200" cy="230" rx="110" ry="18" fill="#0A1E1B"/>
+          <path d="M110 200c0 40 40 56 90 56s90-16 90-56z" fill="#E7DCC4"/>
+          <path d="M110 200h180" stroke="#B8924A" stroke-width="3"/>
+          <g fill="#D98E1F"><circle cx="160" cy="190" r="6"/><circle cx="180" cy="184" r="5"/><circle cx="205" cy="188" r="6"/><circle cx="228" cy="184" r="5"/><circle cx="244" cy="192" r="5"/></g>
+          <g fill="#58A598"><path d="M170 150q10-30 30-34q-2 28-30 34z"/><path d="M215 146q4-30 28-38q4 28-28 38z"/></g>
+        </svg>
+        <!-- scene 1: architecture -->
+        <svg class="scene" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="340" fill="#1A2F2A"/>
+          <rect y="250" width="400" height="90" fill="#6B3F22"/>
+          <g stroke="#4A2A16" stroke-width="2"><path d="M0 270h400M0 292h400M0 316h400"/></g>
+          <g fill="#58A598"><use href="#leaf" x="40" y="70" width="60" height="140" style="color:#2F7A6C"/><use href="#leaf" x="90" y="100" width="50" height="120" style="color:#3C8E7D" transform="rotate(18 115 160)"/></g>
+          <rect x="230" y="190" width="120" height="12" fill="#C69762"/><rect x="244" y="202" width="8" height="48" fill="#8A5530"/><rect x="328" y="202" width="8" height="48" fill="#8A5530"/>
+          <path d="M170 230h40v-30h-40z" fill="#8A5530"/><path d="M170 200v-46" stroke="#8A5530" stroke-width="8"/><rect x="164" y="226" width="6" height="24" fill="#6B3F22"/><rect x="204" y="226" width="6" height="24" fill="#6B3F22"/>
+          <circle cx="300" cy="170" r="14" fill="#D98E1F" opacity=".7"/>
+        </svg>
+        <!-- scene 2: sensory -->
+        <svg class="scene" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="340" fill="#1D2B2A"/>
+          <ellipse cx="200" cy="40" rx="140" ry="120" fill="#E5A23A" opacity=".18"/>
+          <g fill="none" stroke="#9DBBB2" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M40 120c40-20 80 20 120 0s80-20 120 0 80 20 100 0"/><path d="M40 150c40-20 80 20 120 0s80-20 120 0 80 20 100 0" opacity=".6"/><path d="M40 180c40-20 80 20 120 0s80-20 120 0 80 20 100 0" opacity=".35"/></g>
+          <circle cx="200" cy="260" r="40" fill="none" stroke="#C9B47A" stroke-width="1.5"/><circle cx="200" cy="260" r="62" fill="none" stroke="#C9B47A" stroke-width="1" opacity=".5"/><circle cx="200" cy="260" r="86" fill="none" stroke="#C9B47A" stroke-width=".8" opacity=".3"/>
+        </svg>
+        <!-- scene 3: paced dining -->
+        <svg class="scene" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="340" fill="#2B1E16"/>
+          <rect x="30" y="40" width="10" height="250" fill="#8A5530"/><rect x="190" y="40" width="10" height="250" fill="#8A5530"/><rect x="360" y="40" width="10" height="250" fill="#8A5530"/>
+          <g stroke="#B8924A" stroke-width="1.5" opacity=".7"><path d="M40 60h150M40 90h150M40 120h150" /><path d="M200 60h160M200 90h160M200 120h160"/></g>
+          <ellipse cx="115" cy="230" rx="52" ry="10" fill="#1B1410"/><rect x="63" y="214" width="104" height="10" fill="#C69762"/>
+          <ellipse cx="280" cy="230" rx="52" ry="10" fill="#1B1410"/><rect x="228" y="214" width="104" height="10" fill="#C69762"/>
+          <circle cx="115" cy="206" r="8" fill="#E5A23A"/><circle cx="280" cy="206" r="8" fill="#E5A23A"/>
+          <circle cx="115" cy="206" r="30" fill="#E5A23A" opacity=".15"/><circle cx="280" cy="206" r="30" fill="#E5A23A" opacity=".15"/>
+        </svg>
+        <div class="cap"><h3 id="pt">Mastery-Driven Purity</h3><p id="pd">Unadulterated ingredient execution. Every spice and herb is handled so that its own character leads the dish.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CUISINE -->
+<section id="cuisine" class="dark pad">
+  <div class="wrap">
+    <div class="eyebrow rv">Culinary Mastery</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">MASTERY-DRIVEN PURITY</h2>
+    <div class="cuisine-grid">
+      <div>
+        <div class="chefs rv"><span>Dhanush LR</span><i>&amp;</i><span>Bhavadas PS</span></div>
+        <p class="lede rv" style="margin-top:22px">Our culinary team works from one conviction: when a kitchen is honest, the guest can stop worrying. Integrity means each ingredient is cooked to express itself, with nothing hidden under oil, sugar or noise. Guests extend absolute trust because the plate has earned it.</p>
+        <p class="lede rv d1" style="margin-top:16px">The kitchen runs on three working principles, applied at every station, every service.</p>
+      </div>
+      <div class="kitchen rv d1" aria-hidden="true">
+        <svg viewBox="0 0 400 400" style="width:100%;height:100%">
+          <defs><radialGradient id="fg" cx="50%" cy="100%" r="70%"><stop offset="0" stop-color="#F2A93B"/><stop offset="1" stop-color="#C8641E" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="200" cy="230" r="170" fill="url(#fg)" opacity=".35"/>
+          <g class="flame" fill="#E5A23A"><path d="M120 300c-14-26 4-46 12-66c6 22 22 28 16 66z"/></g>
+          <g class="flame b" fill="#F2A93B"><path d="M200 306c-18-34 6-62 14-92c10 30 30 40 20 92z"/></g>
+          <g class="flame c" fill="#E5A23A"><path d="M286 300c-14-26 4-46 12-66c6 22 22 28 16 66z"/></g>
+          <path d="M70 230c0 60 60 84 130 84s130-24 130-84z" fill="#14100D"/>
+          <path d="M70 230h260" stroke="#4A3A2C" stroke-width="5"/>
+          <path d="M330 232l66-16" stroke="#4A3A2C" stroke-width="9" stroke-linecap="round"/>
+          <g fill="#D98E1F"><circle cx="130" cy="214" r="6"/><circle cx="160" cy="208" r="5"/><circle cx="196" cy="212" r="6"/><circle cx="232" cy="206" r="5"/><circle cx="262" cy="214" r="6"/></g>
+          <g fill="#58A598"><path d="M150 190q8-26 26-30q-2 24-26 30z"/><path d="M226 186q4-26 24-34q4 24-24 34z"/></g>
+          <path d="M110 160c-10-20 6-30 0-48M200 150c-12-22 8-34 0-56M290 160c-10-20 6-30 0-48" fill="none" stroke="#F1E8D6" stroke-opacity=".25" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="ops">
+      <div class="op rv"><h3>Thermal Control</h3><q>Zero oil retention in woks.</q></div>
+      <div class="op rv d1"><h3>Spice Extraction</h3><q>Slow-roasting for natural oils.</q></div>
+      <div class="op rv d2"><h3>Minimal Waste</h3><q>Sustainable ingredient utilization.</q></div>
+    </div>
+  </div>
+</section>
+
+<!-- CULTURAL SYNERGY -->
+<section id="cultural" class="pad" style="padding-bottom:clamp(140px,18vw,240px)">
+  <div class="wrap">
+    <div class="eyebrow rv">Four Regions of India</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">CULTURAL SYNERGY</h2>
+    <p class="lede rv" style="margin-top:18px">Four Indian regions, each with its own grammar of flavor. They are kept distinct at the stove and brought together at the table.</p>
+    <div class="regions">
+      <article class="reg rv" style="--c:#C8641E"><div class="dot"></div><h3>DELHI</h3><q>Bold aromatic traditions.</q></article>
+      <article class="reg rv d1" style="--c:#6F7340"><div class="dot"></div><h3>MIZORAM</h3><q>Clean, earthy profiles.</q></article>
+      <article class="reg rv d2" style="--c:#B88A1F"><div class="dot"></div><h3>BENGAL</h3><q>Complex depth of flavor.</q></article>
+      <article class="reg rv d3" style="--c:#2F7A4A"><div class="dot"></div><h3>KERALA</h3><q>Vibrant tropical freshness.</q></article>
+    </div>
+    <svg class="funnel" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="none" stroke="#1F5A52" stroke-width="1.6" stroke-linecap="round" opacity=".75">
+        <path d="M125 0C125 110 420 80 500 168"/><path d="M375 0C375 90 470 100 500 168"/><path d="M625 0C625 90 530 100 500 168"/><path d="M875 0C875 110 580 80 500 168"/>
+      </g>
+      <rect x="470" y="168" width="60" height="30" rx="3" fill="#1F5A52"/>
+    </svg>
+    <div class="merge">
+      <p class="rv">Different identities enter the same box and leave as one experience, carried across to the Thai side of the table.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SIAM SPICE HOUSE -->
+<section id="siam" class="jade pad">
+  <svg class="siam-bg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#9DBBB2" stroke-opacity=".12" stroke-width="1">
+      <path d="M0 140C200 100 400 180 600 140S1000 100 1200 140"/><path d="M0 200C200 160 400 240 600 200S1000 160 1200 200"/><path d="M0 260C200 220 400 300 600 260S1000 220 1200 260"/>
+    </g>
+    <g class="mist" fill="#9DBBB2" opacity=".07"><ellipse cx="300" cy="620" rx="380" ry="40"/><ellipse cx="900" cy="680" rx="420" ry="46"/></g>
+  </svg>
+  <div class="wrap siam-grid">
+    <div>
+      <div class="eyebrow rv">A Concept Within Spice Box Co.</div>
+      <h2 class="siam-title rv d1" style="margin-top:16px"><i>The Thai-inspired expression</i>SIAM<br>SPICE HOUSE</h2>
+      <div class="thai-line rv"><svg viewBox="0 0 60 40"><use href="#lotus"/></svg></div>
+      <p class="lede rv">Siam Spice House is where Thai-inspired flavors, freshness and balance meet the Spice Box philosophy. Herbs are bright, acids are exact, and sweetness, salt and heat sit in measured proportion.</p>
+      <p class="lede rv d1" style="margin-top:16px">The room is quieter than the rest of the brand: deep jade, curved rooflines, living greenery and a pace that lets every plate settle before the next arrives.</p>
+      <div class="sq rv">
+        <div><b>Flavors</b><span>Lemongrass, galangal, kaffir lime and Thai basil, handled with restraint.</span></div>
+        <div><b>Balance</b><span>Sour, sweet, salty and hot held in equilibrium on every plate.</span></div>
+        <div><b>Calm</b><span>Tropical greenery, soft light and a deliberately unhurried tempo.</span></div>
+      </div>
+    </div>
+    <div class="siam-art rv d1" aria-hidden="true">
+      <svg viewBox="0 0 400 500">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1F6B60"/><stop offset="1" stop-color="#0B2C29"/></linearGradient></defs>
+        <rect x="20" y="10" width="360" height="480" rx="180" ry="180" fill="url(#sg)" stroke="#C9B47A" stroke-opacity=".5"/>
+        <circle cx="200" cy="170" r="90" fill="#C9B47A" opacity=".16"/>
+        <g style="color:#0A2523"><use href="#pagoda" x="105" y="70" width="190" height="247"/></g>
+        <g style="color:#2F7A6C"><use href="#leaf" x="30" y="300" width="70" height="170" transform="rotate(-20 65 440)"/><use href="#leaf" x="300" y="300" width="70" height="170" transform="rotate(22 335 440)"/></g>
+        <g style="color:#3C8E7D"><use href="#leaf" x="80" y="340" width="56" height="140" transform="rotate(10 108 470)"/><use href="#leaf" x="264" y="340" width="56" height="140" transform="rotate(-12 292 470)"/></g>
+        <path d="M20 440c60-20 120 10 180-4s120-20 180 4v36c0 8-8 14-14 14H34c-6 0-14-6-14-14z" fill="#0A2523"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="pad">
+  <div class="wrap">
+    <div class="eyebrow rv">The Physical Experience</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">ENGINEERED FOR COMFORT</h2>
+    <div class="exp-grid">
+      <figure class="sect rv">
+        <svg viewBox="0 0 520 330" role="img" aria-label="Section drawing of a dining chair and table with height dimensions">
+          <rect x="0" y="270" width="520" height="14" fill="#8A5530"/>
+          <g stroke="#2A1D16" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:var(--fg)">
+            <path d="M80 270V160M80 160h90M170 160v110M80 160V70" stroke="var(--fg)"/>
+            <path d="M260 120h220M290 120v150M450 120v150" stroke="var(--fg)"/>
+          </g>
+          <g stroke="var(--terracotta)" stroke-width="1.2" fill="none"><path d="M40 160v110M36 160h8M36 270h8"/><path d="M510 120v150M506 120h8M506 270h8"/><path d="M30 70v200M26 70h8"/></g>
+          <g font-family="Hanken Grotesk,sans-serif" font-size="12" fill="var(--terracotta)" letter-spacing="1">
+            <text x="42" y="218" transform="rotate(-90 42 218)" text-anchor="middle">SEAT</text>
+            <text x="498" y="196" transform="rotate(-90 498 196)" text-anchor="middle">TABLE</text>
+            <text x="18" y="170" transform="rotate(-90 18 170)" text-anchor="middle">BACK</text>
+          </g>
+          <circle cx="360" cy="108" r="12" fill="#C8641E" opacity=".8"/>
+          <g style="color:#2F7A6C"><use href="#leaf" x="190" y="196" width="40" height="76" style="color:#2F7A6C"/></g>
+        </svg>
+        <figcaption>Section study: seat, table and back support set as one system</figcaption>
+      </figure>
+      <div class="elist">
+        <div class="rv"><h3>Ergonomic Support</h3><p>Designed to prevent dining fatigue.</p></div>
+        <div class="rv d1"><h3>Optimized Geometry</h3><p>Precision table and chair heights.</p></div>
+        <div class="rv d2"><h3>Natural Textures</h3><p>Calming organic wood finishes.</p></div>
+        <div class="rv d3"><h3>Sensory Elements</h3><p>Indoor botanical integration.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SENSORY -->
+<section id="sensory" class="pad" style="padding-block:clamp(100px,14vw,200px)">
+  <div class="wrap">
+    <div class="eyebrow rv">Quiet by Design</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">SENSORY DECOMPRESSION</h2>
+    <p class="lede rv" style="margin-top:20px">Mental wellness achieved by eliminating overstimulation.</p>
+    <div class="sens">
+      <article class="sc rv">
+        <div class="vis"><svg viewBox="0 0 300 240" aria-hidden="true"><g fill="none" stroke="#2E6A60" stroke-width="2" stroke-linecap="round" class="breath"><path d="M30 80c40-24 70 24 110 0s70-24 130 0"/><path d="M30 120c40-24 70 24 110 0s70-24 130 0"/><path d="M30 160c40-24 70 24 110 0s70-24 130 0"/></g><circle cx="240" cy="50" r="8" fill="#2E6A60" opacity=".4"/></svg></div>
+        <div class="k">AIR</div><h3>Pristine Extraction</h3><p>State-of-the-art kitchen ventilation.</p>
+      </article>
+      <article class="sc rv d1">
+        <div class="vis"><svg viewBox="0 0 300 240" aria-hidden="true"><g fill="none" stroke="#2E6A60" stroke-linecap="round"><g class="wave"><circle cx="90" cy="120" r="18" stroke-width="2"/><circle cx="90" cy="120" r="40" stroke-width="1.6" opacity=".6"/><circle cx="90" cy="120" r="64" stroke-width="1.2" opacity=".35"/></g></g><rect x="190" y="60" width="26" height="120" fill="#C9D3C2"/><rect x="224" y="60" width="26" height="120" fill="#D9E1D2"/><rect x="258" y="60" width="26" height="120" fill="#E6ECDF"/></svg></div>
+        <div class="k">SOUND</div><h3>Acoustic Dampening</h3><p>Materials absorbing dining clatter.</p>
+      </article>
+      <article class="sc rv d2">
+        <div class="vis"><svg viewBox="0 0 300 240" aria-hidden="true"><defs><radialGradient id="lg" cx="50%" cy="30%" r="60%"><stop offset="0" stop-color="#E5A23A" stop-opacity=".7"/><stop offset="1" stop-color="#E5A23A" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="80" r="110" fill="url(#lg)" class="breath"/><path d="M150 20v34" stroke="#2E6A60" stroke-width="2"/><path d="M122 54h56l10 36H112z" fill="#C69762"/><rect x="60" y="170" width="180" height="10" fill="#8A5530"/></svg></div>
+        <div class="k">LIGHT</div><h3>Visual Rest</h3><p>Warm, low-glare ambient lighting.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PACED SERVICE -->
+<section id="service" class="dark pad">
+  <div class="wrap">
+    <div class="eyebrow rv">Service</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">THE ART OF PACED SERVICE</h2>
+    <p class="team-line rv">Jai Singh<i>,</i>Dhananjay<i>&amp;</i>Buangchanthluanga Zote</p>
+    <div class="journey rv" id="journey">
+      <div class="track" id="track">
+        <article class="step"><div class="n">01</div><h3>Seamless Arrival</h3><q>Anticipating needs instantly.</q><svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 15h58M50 6l10 9-10 9"/></svg></article>
+        <article class="step"><div class="n">02</div><h3>Intuitive Guidance</h3><q>Removing decision fatigue.</q><svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 15h58M50 6l10 9-10 9"/></svg></article>
+        <article class="step"><div class="n">03</div><h3>Unrushed Courses</h3><q>Protecting the dining tempo.</q><svg viewBox="0 0 64 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="32" cy="15" r="11"/><path d="M32 8v7l5 3"/></svg></article>
+      </div>
+      <div class="pace"><i></i></div>
+      <div class="hint">Swipe through the guest journey</div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" class="pad">
+  <div class="wrap">
+    <div class="eyebrow rv">Our Team</div>
+    <h2 class="h2 rv d1" style="margin-top:12px">THE PEOPLE BEHIND THE BOX</h2>
+    <div class="teams">
+      <article class="tm rv" style="--c:#B4552F"><div class="role">Culinary Team</div><ul><li><span class="av">DL</span>Dhanush LR</li><li><span class="av">BP</span>Bhavadas PS</li></ul></article>
+      <article class="tm rv d1" style="--c:#1F5A52"><div class="role">Service Team</div><ul><li><span class="av">JS</span>Jai Singh</li><li><span class="av">D</span>Dhananjay</li></ul></article>
+      <article class="tm rv d2" style="--c:#A8843C"><div class="role">Sales Team</div><ul><li><span class="av">AL</span>Arpit Lonial</li><li><span class="av">DK</span>Darsh Kumar</li></ul></article>
+      <article class="tm rv" style="--c:#6F7340"><div class="role">Social Media</div><ul><li><span class="av">DR</span>Dishan Roy</li><li><span class="av">GP</span>Gadha PT</li></ul></article>
+      <article class="tm rv d1" style="--c:#C8641E"><div class="role">Guest Experience</div><ul><li><span class="av">BZ</span>Buangchanthluanga Zote</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="enter" class="pad" style="padding-block:clamp(110px,16vw,220px)">
+  <div class="wrap">
+    <h2 class="final rv"><span>Separately</span><span class="t">curated.</span><span>Together</span><span class="t">complete.</span></h2>
+    <div class="brandrow rv d1">
+      <b>SPICE BOX CO.</b>
+      <em>Nine Compartments, One Closed Lid</em>
+      <button class="btn fill enter-btn" id="enterbtn" aria-expanded="false" aria-controls="enternote" type="button">Enter the Box <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 10h13M11 5l5 5-5 5"/></svg></button>
+      <p class="note" id="enternote" hidden>Reservations are opening soon. Details will be shared here.</p>
+    </div>
+  </div>
+</section>
+</main>
+<footer><span>SPICE BOX CO.</span><span>Siam Spice House is a concept within Spice Box Co.</span></footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* nav */
+  var hdr=document.getElementById('top'),burger=document.getElementById('burger'),sheet=document.getElementById('sheet');
+  function setOpen(o){burger.setAttribute('aria-expanded',o);burger.setAttribute('aria-label',o?'Close menu':'Open menu');sheet.classList.toggle('open',o);}
+  burger.addEventListener('click',function(){setOpen(burger.getAttribute('aria-expanded')!=='true')});
+  sheet.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){setOpen(false)})});
+
+  /* spice box */
+  var items=[
+    {n:'Delhi',c:'#C8641E',t:'Compartment 01 · India',d:'Bold aromatic traditions. Whole spices bloomed hot, with a confident, fragrant opening.'},
+    {n:'Mizoram',c:'#6F7340',t:'Compartment 02 · India',d:'Clean, earthy profiles. Restraint, smoke and fresh leaf, with very little between you and the ingredient.'},
+    {n:'Bengal',c:'#B88A1F',t:'Compartment 03 · India',d:'Complex depth of flavor. Mustard, slow layering and a sweetness that arrives late.'},
+    {n:'Kerala',c:'#2F7A4A',t:'Compartment 04 · India',d:'Vibrant tropical freshness. Coconut, curry leaf and pepper, bright and coastal.'},
+    {n:'Siam',c:'#1F6B60',t:'Compartment 05 · Thailand',d:'The Thai-inspired heart of the box: freshness, balance and sensory calm. Explore it as Siam Spice House.'},
+    {n:'Purity',c:'#E7DCC4',t:'Compartment 06 · Kitchen',d:'Mastery-driven purity. Unadulterated ingredient execution led by the culinary team.'},
+    {n:'Comfort',c:'#8A5530',t:'Compartment 07 · Space',d:'Ergonomic architecture. Biophilic physical comfort in wood, plants and precise geometry.'},
+    {n:'Calm',c:'#4F7F78',t:'Compartment 08 · Atmosphere',d:'Sensory decompression. Pristine air, softened sound and low-glare light.'},
+    {n:'Tempo',c:'#B4552F',t:'Compartment 09 · Service',d:'Paced dining. Insulated spatial privacy and courses that are never rushed.'}
+  ];
+  var cells=document.getElementById('cells'),info=document.getElementById('info'),box=document.getElementById('box'),lidbtn=document.getElementById('lidbtn'),lid=document.getElementById('lid');
+  function show(i){
+    var it=items[i];
+    info.innerHTML='<em>'+it.t+'</em><h3>'+it.n+'</h3><p>'+it.d+'</p>';
+    [].forEach.call(cells.children,function(c,k){c.classList.toggle('act',k===i)});
+  }
+  items.forEach(function(it,i){
+    var b=document.createElement('button');b.className='cell';b.type='button';b.style.setProperty('--c',it.c);
+    b.setAttribute('aria-label',it.n+': '+it.d);b.innerHTML='<span>'+it.n+'</span>';
+    b.addEventListener('mouseenter',function(){show(i)});b.addEventListener('focus',function(){show(i)});b.addEventListener('click',function(){show(i)});
+    cells.appendChild(b);
+  });
+  show(4);
+  lidbtn.addEventListener('click',function(){
+    var closed=box.classList.toggle('closed');
+    lid.setAttribute('aria-hidden',!closed);
+    lidbtn.textContent=closed?'Open the box':'Close the lid';
+  });
+
+  /* pillars */
+  var P=[
+    ['Mastery-Driven Purity','Unadulterated ingredient execution. Every spice and herb is handled so that its own character leads the dish.'],
+    ['Ergonomic Architecture','Biophilic physical comfort. Natural wood, living plants and measured furniture geometry keep the body at ease.'],
+    ['Sensory Decompression','Pristine environmental control. Air, sound and light are managed so the room never competes with the meal.'],
+    ['Paced Dining','Insulated spatial privacy. Tables are spaced and courses timed so every party dines in its own unhurried bubble.']
+  ];
+  var tabs=[].slice.call(document.querySelectorAll('.ptab')),scenes=[].slice.call(document.querySelectorAll('#ppanel .scene'));
+  function pick(i){
+    tabs.forEach(function(t,k){t.setAttribute('aria-selected',k===i)});
+    scenes.forEach(function(s,k){s.classList.toggle('on',k===i)});
+    document.getElementById('pt').textContent=P[i][0];document.getElementById('pd').textContent=P[i][1];
+  }
+  tabs.forEach(function(t,i){t.addEventListener('click',function(){pick(i)});t.addEventListener('mouseenter',function(){if(window.matchMedia('(hover:hover)').matches)pick(i)});});
+
+  /* finale */
+  var eb=document.getElementById('enterbtn'),en=document.getElementById('enternote');
+  eb.addEventListener('click',function(){var o=en.hidden;en.hidden=!o;eb.setAttribute('aria-expanded',o)});
+
+  /* reveals */
+  var rv=[].slice.call(document.querySelectorAll('.rv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    rv.forEach(function(el){io.observe(el)});
+  } else rv.forEach(function(el){el.classList.add('in')});
+
+  /* header state, active link, parallax */
+  var links=[].slice.call(document.querySelectorAll('.links a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  var par=[].slice.call(document.querySelectorAll('[data-speed]')),home=document.getElementById('home'),ticking=false;
+  function frame(){
+    ticking=false;var y=window.scrollY;
+    hdr.classList.toggle('solid',y>40);
+    if(!reduce&&y<home.offsetHeight+200){par.forEach(function(g){g.style.transform='translateY('+(y*parseFloat(g.dataset.speed))+'px)'})}
+    var cur=0;secs.forEach(function(s,i){if(s&&s.getBoundingClientRect().top<window.innerHeight*.4)cur=i});
+    /* paced service and sensory sit between listed sections: map them to nearest nav item */
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur)});
+  }
+  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(frame)}},{passive:true});
+  frame();
+})();
+</script>
+
+</body>
+</html>
